@@ -1,0 +1,13 @@
+networks:
+  default:
+    external: true
+    name: ${INFRA_NETWORK_NAME}
+services:
+  registry:
+    container_name: ${REGISTRY_CONTAINER_NAME}
+    hostname: ${REGISTRY_DOMAIN_NAME}
+    image: registry:2
+    volumes:
+      - registry_data:/var/lib/registry/data
+volumes:
+  registry_data:

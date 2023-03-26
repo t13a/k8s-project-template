@@ -1,0 +1,43 @@
+networks:
+  default:
+    name: ${INFRA_NETWORK_NAME}
+services:
+  main:
+    build: main
+    command:
+      - code-server
+      - --config=/config.yaml
+      - --disable-telemetry
+      - --disable-update-check
+      - /mnt/${PROJECT_NAME}
+    container_name: ${MAIN_CONTAINER_NAME}
+    environment:
+      - DOCKER_GID
+      - HOME=/home/main
+      - MAIN_GID
+      - MAIN_UID
+    group_add:
+      - ${DOCKER_GID}
+    hostname: ${MAIN_DOMAIN_NAME}
+    user: ${MAIN_UID}:${MAIN_GID}
+    ports:
+      - ${MAIN_HTTP_HOST_PORT}:8080
+    volumes:
+      - type: bind
+        source: ..
+        target: /mnt/${PROJECT_NAME}
+      - type: bind
+        source: ./.main
+        target: /home/main
+      - type: bind
+        source: ./ca/ca.crt
+        target: /usr/local/share/ca-certificates/infra-ca.crt
+        read_only: true
+      - type: bind
+        source: ./config.yaml
+        target: /config.yaml
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    working_dir: /mnt/${PROJECT_NAME}

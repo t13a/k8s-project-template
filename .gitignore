@@ -1,0 +1,4 @@
+/.env
+/infra/.env
+/infra/.main
+/infra/registry/.env

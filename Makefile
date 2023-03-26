@@ -1,13 +1,28 @@
-include *.mk
+.SECONDEXPANSION:
 
-.PHONY: up
-up: code/init code/build code/up db/init db/up
+from_env = $(shell hack/dotenv.sh $1 -- printenv $2)
+from_json = $(shell jq -r '$2' $1)
 
-.PHONY: down
-down: code/init code/down db/init db/down
+.PHONY: gen
+gen: $$(GEN_FILES) $$(GEN_FILES_NON_IDEMPOTENT)
 
-.PHONY: exec
-exec: code/exec
+.PHONY: rm
+rm:
+	rm -f $(GEN_FILES)
+
+.PHONY: rm-all
+rm-all:
+	rm -f $(GEN_FILES) $(GEN_FILES_NON_IDEMPOTENT)
+
+.PHONY: init
+init: $$(INIT_FILES) $$(INIT_DIRS)
 
 .PHONY: clean
-clean: code/clean db/clean
+clean:
+	rm -f $(INIT_FILES)
+
+.PHONY: clean-all
+clean-all:
+	rm -rf $(INIT_FILES) $(INIT_DIRS)
+
+include *.mk
